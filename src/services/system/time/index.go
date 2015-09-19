@@ -1,4 +1,4 @@
-package hello
+package time
 
 //export Index
 
@@ -13,3 +13,4 @@ func Index(method string, params map[string]string) time.Time {
     // Very simple, this is a read only method for now
 	return time.Now()
 }
+
