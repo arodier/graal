@@ -21,6 +21,7 @@ shared-install:
 
 services:
 	$(GO) build $(LIB_OPTIONS) -o lib/services/graal/hello.a src/services/graal/hello/index.go
+	$(GO) build $(LIB_OPTIONS) -o lib/services/systen/time.a src/services/system/time/index.go
 
 formatters:
 	$(GO) build $(LIB_OPTIONS) -o lib/formatters/json.a src/formatters/json.go
