@@ -22,3 +22,11 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# Vim / Emacs files
+*~
+.#*
+
+# Binary folders
+bin/
+lib/
