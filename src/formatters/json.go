@@ -12,27 +12,27 @@ func String(writer http.ResponseWriter, request *http.Request, data string) {
     // Default content type
     writer.Header().Set("Content-Type", "application/json")
 
-	// A simple response type to encapsulate the data
+    // A simple response type to encapsulate the data
     type SimpleResponse struct {
         Data      string
     }
 
-	res := SimpleResponse {
-		Data: data,
-	}
+    res := SimpleResponse {
+        Data: data,
+    }
 
-	result, error := json.Marshal(res)
+    result, error := json.Marshal(res)
 
-	if error == nil {
-		// Default answer
-		writer.Write([]byte(result))
-	} else {
-		writer.Write([]byte("Error"))
-	}
+    if error == nil {
+        // Default answer
+        writer.Write([]byte(result))
+    } else {
+        writer.Write([]byte("Error"))
+    }
 }
 
 // Format a more complex structure
-func Struct(writer http.ResponseWriter, request *http.Request, data interface{}) {
+func Struct(writer http.ResponseWriter, request *http.Request, data interface{}, indent bool) {
 
     // Default content type
     writer.Header().Set("Content-Type", "application/json")
@@ -46,7 +46,14 @@ func Struct(writer http.ResponseWriter, request *http.Request, data interface{})
         Data: data,
     }
 
-    result, error := json.Marshal(res)
+    var result []byte
+    var error error
+
+    if indent {
+        result, error = json.MarshalIndent(res, "", "")
+    } else {
+        result, error = json.Marshal(res)
+    }
 
     if error == nil {
         // Default answer

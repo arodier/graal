@@ -4,17 +4,17 @@ package hello
 //export Index
 
 import (
-	"C"
+    "C"
 )
 
 func get() string {
-	return "Hello, how are you?"
+    return "Hello, how are you?"
 }
 
 
 func Index(method string, params map[string]string) string {
 
-	// Very simple example, ignore everything
-	return get()
+    // Very simple example, ignore everything
+    return get()
 }
 

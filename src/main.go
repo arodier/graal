@@ -4,6 +4,7 @@ import (
     "log"
     "fmt"
     "net/http"
+    "flag"
 )
 
 // Manual import services and formatters, until plugins implemented
@@ -16,15 +17,22 @@ import StatsService "./services/system/stats/"
 import fmtJson "./formatters/"
 
 // It is recemmended to use a port between 1180 and 1191 ;-)
+// Example 1: A single string flag called "species" with default value "gopher".
+var addressFlag = flag.String("ip", "127.0.0.1", "The IP address to bind. Use * for all")
+var portFlag = flag.Int("port", 1188, "The port to listen on.")
+var indentFlag = flag.Bool("indent", false, "Set to true if you want to indent the returned JSON")
 
 func main() {
 
-    // Initialise variables
-    port := 1191
-    address := "127.0.0.1"
-    bind := fmt.Sprintf("http://%s:%d/", address, port)
+    // Initialise variables from the command line
+    flag.Parse()
+
+    var address = *addressFlag;
+    var port = *portFlag;
+    var indent = *indentFlag;
 
     // Start logging
+    bind := fmt.Sprintf("http://%s:%d/", address, port)
     log.Printf("Starting the Graal server on '%s'", bind)
 
     // Initialise routes ================================
@@ -40,14 +48,14 @@ func main() {
     http.HandleFunc("/system/time", func(writer http.ResponseWriter, request *http.Request) {
         // No parameters for hello
         result := TimeService.Index("", nil)
-        fmtJson.Struct(writer, request, result)
+        fmtJson.Struct(writer, request, result, indent)
     })
 
     // system stats functions
     http.HandleFunc("/system/stats", func(writer http.ResponseWriter, request *http.Request) {
         // No parameters for hello
         result := StatsService.Index("", nil)
-        fmtJson.Struct(writer, request, result)
+        fmtJson.Struct(writer, request, result, indent)
     })
 
     // Start the server
