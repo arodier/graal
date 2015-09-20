@@ -3,9 +3,6 @@ package json
 import "encoding/json"
 import "net/http"
 
-// Exported symbols:
-//export Simple
-
 // Very simple string data format
 func String(writer http.ResponseWriter, request *http.Request, data string) {
 

@@ -16,8 +16,9 @@ import StatsService "./services/system/stats/"
 // Output formatters to use (json/xml/etc.)
 import fmtJson "./formatters/"
 
+const VERSION = "0.0.1"
+
 // It is recemmended to use a port between 1180 and 1191 ;-)
-// Example 1: A single string flag called "species" with default value "gopher".
 var addressFlag = flag.String("ip", "127.0.0.1", "The IP address to bind. Use * for all")
 var portFlag = flag.Int("port", 1188, "The port to listen on.")
 var indentFlag = flag.Bool("indent", false, "Set to true if you want to indent the returned JSON")
@@ -42,6 +43,13 @@ func main() {
         // No parameters for hello
         result := HelloService.Index("", nil)
         fmtJson.String(writer, request, result)
+    })
+
+    // home page
+    http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+        // Return nothing for now, we may add an option for user content later if requested
+        writer.Header().Set("Content-Type", "text/html")
+        writer.Write([]byte("Graal version "+VERSION))
     })
 
     // system time functions

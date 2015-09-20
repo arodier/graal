@@ -29,5 +29,5 @@ formatters:
 build: formatters services
 	$(GO) build $(BUILD_OPTIONS) -o bin/graal src/main.go
 
-start:
+run:
 	./bin/graal

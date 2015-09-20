@@ -18,7 +18,7 @@ To use shared librairies, you will require at least the version 1.5 of go
 ## Building
 - make clean: remove binaries
 - make build: build the main binary and the archives
-- make start: start the server, on default IP address and port
+- make run: run the server, on default IP address and port (http://127.0.0.1:1188/)
 
 ## Directories
 - src/formatters: output formatters: json, xml, etc...
@@ -38,6 +38,7 @@ Neither there is SSL encryption.
 If you start the program without any option, it will listen on 127.0.0.1, on port 1188
 
 To change the address or the port number, use the following syntax:
+
 `graal -ip 192.168.42.42 -port 1909`
 
 To see the other options, use graal --help
