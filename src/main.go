@@ -10,10 +10,11 @@ import (
 )
 
 // Manual import services and formatters, until plugins implemented
-// System services to import (input)
+// Graal Specific services
 import HelloService "./services/graal/hello/"
-import TimeService "./services/system/time/"
-import StatsService "./services/system/stats/"
+
+// System services entry point
+import SystemService "./services/system/"
 
 // Output formatters to use (json/xml/etc.)
 import fmtJson "./formatters/"
@@ -42,7 +43,7 @@ func main() {
 
     // hello api
     http.HandleFunc("/hello", func(writer http.ResponseWriter, request *http.Request) {
-        // No parameters for hello
+        // No parameters required for hello
         result := HelloService.Index("", nil)
         fmtJson.String(writer, request, result)
     })
@@ -54,19 +55,8 @@ func main() {
         writer.Write([]byte("Graal version "+VERSION))
     })
 
-    // system time functions
-    http.HandleFunc("/system/time", func(writer http.ResponseWriter, request *http.Request) {
-        // No parameters for hello
-        result := TimeService.Index("", nil)
-        fmtJson.Struct(writer, request, result, indent)
-    })
-
-    // system stats functions
-    http.HandleFunc("/system/stats", func(writer http.ResponseWriter, request *http.Request) {
-        // No parameters for hello
-        result := StatsService.Index("", nil)
-        fmtJson.Struct(writer, request, result, indent)
-    })
+    // Load system services (monitor mem/load/etc.)
+    SystemService.Load(indent)
 
     // Properly handle Ctrl-C
     channel := make(chan os.Signal, 1)
