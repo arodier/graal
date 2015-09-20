@@ -5,6 +5,8 @@ import (
     "fmt"
     "net/http"
     "flag"
+    "os"
+    "os/signal"
 )
 
 // Manual import services and formatters, until plugins implemented
@@ -66,6 +68,16 @@ func main() {
         fmtJson.Struct(writer, request, result, indent)
     })
 
+    // Properly handle Ctrl-C
+    channel := make(chan os.Signal, 1)
+    signal.Notify(channel, os.Interrupt)
+    go func() {
+        for _ = range channel {
+            log.Printf("Receiving interrupt. Exit")
+            os.Exit(0)
+        }
+    }()
+
     // Start the server
     var error = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 
@@ -73,3 +85,4 @@ func main() {
         log.Fatal(error)
     }
 }
+

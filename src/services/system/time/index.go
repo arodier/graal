@@ -1,16 +1,13 @@
 package time
 
-//export Index
-
 import (
     "C"
-	"time"
+    "time"
 )
-
 
 func Index(method string, params map[string]string) time.Time {
 
     // Very simple, this is a read only method for now
-	return time.Now()
+    return time.Now()
 }
 
