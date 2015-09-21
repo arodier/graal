@@ -9,6 +9,7 @@ Graal is a REST api server to administer or to monitor a linux machine, programm
 - It's safe (strongly typed language)
 - It does not need extra librairies (php/python/perl,etc...)
 - It's simple
+- It's powerful
 
 Some services are just reading information from the server, while other services may act on it.
 

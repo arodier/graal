@@ -1,0 +1,43 @@
+# Simple dockerfile for an ssh + server.
+#  From this base-image / starting-point
+FROM debootstrap/jessie
+
+#  Authorship
+MAINTAINER root@localhost
+
+# Update apt
+RUN TERM=linux apt-get update -q
+RUN TERM=linux apt-get upgrade --yes --force-yes
+
+# Install some tools
+RUN TERM=linux apt-get install less sudo screen --yes --force-yes
+
+# Install runit
+RUN TERM=linux apt-get install runit --yes --force-yes
+
+# Install SSH
+RUN TERM=linux apt-get install openssh-server openssh-client rsync --yes --force-yes
+
+# Expose the SSH port
+EXPOSE 22
+
+# Setup a root password
+RUN echo "root:graaliscool" | chpasswd
+
+# Init www-data user
+EXPOSE 80
+RUN usermod -s /bin/sh www-data
+
+#  Now make sure that runit will launch SSHD, via runit.
+#  NOTE: Remember runit will launch /etc/service/sshd/run
+RUN mkdir /etc/service/sshd
+RUN /bin/echo -e '#!/bin/sh' > /etc/service/sshd/run
+RUN /bin/echo -e 'exec /usr/sbin/sshd -D' >> /etc/service/sshd/run
+
+#  Make sure our run-script is executable.
+RUN chown root:root /etc/service/sshd/run
+RUN chmod 755 /etc/service/sshd/run
+
+# Finally launch runit.
+ENTRYPOINT ["/usr/sbin/runsvdir-start"]
+

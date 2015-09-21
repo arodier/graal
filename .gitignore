@@ -27,6 +27,11 @@ _testmain.go
 *~
 .#*
 
-# Binary folders
+# Binary or temporary folders
 bin/
 lib/
+tmp/
+
+# Docker instances / working folder
+instances/
+tests/images/
