@@ -63,7 +63,7 @@ func main() {
     signal.Notify(channel, os.Interrupt)
     go func() {
         for _ = range channel {
-            log.Printf("Receiving interrupt. Exit")
+            log.Printf("Receiving interrupt. Bye...")
             os.Exit(0)
         }
     }()
