@@ -39,7 +39,7 @@ If you start the program without any option, it will listen on 127.0.0.1, on por
 
 To change the address or the port number, use the following syntax:
 
-`graal -ip 192.168.42.42 -port 1909`
+    graal -ip 192.168.42.42 -port 1909
 
 To see the other options, use graal --help
 
@@ -47,42 +47,45 @@ To see the other options, use graal --help
 All data is retuned in a JSON encoded object, in a ‘Data’ field
 
 ### Testing the API
-`GET /hello: display a simple text`
-`{"Data":"Hello, how are you?"}`
+
+Say Hello!
+
+    GET /hello
+
+    {"Data":"Hello, how are you?"}
 
 ### Get system time
-`GET /system/time`
-`{"Data":"2015-09-20T08:23:58.880287421+01:00"}`
+
+    GET /system/time
+
+    {"Data":"2015-09-20T08:23:58.880287421+01:00"}
 
 ### Get system statistics
-`GET /system/stats`
 
-```
-{
-  "Data": {
-    "Load": [
-      "0.08",
-      "0.15",
-      "0.21",
-      "2/882",
-      "18247"
-    ],
-    "Uptime": [
-      "1768902.39",
-      "2666255.90"
-    ],
-    "MemInfo": [
-      {
-        "Name": "MemTotal",
-        "Value": "16392264 kB"
-      },{
-        "Name": "MemFree",
-        "Value": "810352 kB"
-      },
-    ...
-    ]
-  }
-}
+    GET /system/stats
 
-```
-
+    {
+      "Data": {
+        "Load": [
+          "0.08",
+          "0.15",
+          "0.21",
+          "2/882",
+          "18247"
+        ],
+        "Uptime": [
+          "1768902.39",
+          "2666255.90"
+        ],
+        "MemInfo": [
+          {
+            "Name": "MemTotal",
+            "Value": "16392264 kB"
+          },{
+            "Name": "MemFree",
+            "Value": "810352 kB"
+          },
+        ...
+        ]
+      }
+    }

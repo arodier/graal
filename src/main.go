@@ -7,6 +7,7 @@ import (
     "flag"
     "os"
     "os/signal"
+    "io/ioutil"
 )
 
 // Manual import services and formatters, until plugins implemented
@@ -25,6 +26,7 @@ const VERSION = "0.0.1"
 var addressFlag = flag.String("ip", "127.0.0.1", "The IP address to bind. Use * for all")
 var portFlag = flag.Int("port", 1188, "The port to listen on.")
 var indentFlag = flag.Bool("indent", false, "Set to true if you want to indent the returned JSON")
+var homeFlag = flag.String("home", "", "The path of a file to answer / requests")
 
 func main() {
 
@@ -34,6 +36,7 @@ func main() {
     var address = *addressFlag;
     var port = *portFlag;
     var indent = *indentFlag;
+    var home = *homeFlag;
 
     // Start logging
     bind := fmt.Sprintf("http://%s:%d/", address, port)
@@ -50,8 +53,18 @@ func main() {
 
     // home page
     http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-        // Return nothing for now, we may add an option for user content later if requested
+
         writer.Header().Set("Content-Type", "text/html")
+
+        if home != "" {
+            homeContent, error := ioutil.ReadFile(home)
+            if error == nil {
+                writer.Write([]byte(homeContent))
+                return
+            } else {
+                log.Printf("Cannot open home file from path '%s'", home)
+            }
+        }
         writer.Write([]byte("Graal version "+VERSION))
     })
 

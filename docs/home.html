@@ -1,0 +1,87 @@
+<h1>Graal</h1>
+
+<p><em>go remote administration api for linux</em></p>
+
+<p>Graal is a REST api server to administer or to monitor a linux machine, programmed in Go.</p>
+
+<ul><li>It is compiled as a native ELF binary.</li><li>It&#39;s fast</li><li>It&#39;s light</li><li>It&#39;s safe (strongly typed language)</li><li>It does not need extra librairies (php/python/perl,etc...)</li><li>It&#39;s simple</li></ul>
+
+<p>Some services are just reading information from the server, while other services may act on it.</p>
+
+<h2>Requirements</h2>
+
+<p>To use shared librairies, you will require at least the version 1.5 of go</p>
+
+<h2>Building</h2>
+
+<ul><li>make clean: remove binaries</li><li>make build: build the main binary and the archives</li><li>make run: run the server, on default IP address and port (http://127.0.0.1:1188/)</li></ul>
+
+<h2>Directories</h2>
+
+<ul><li>src/formatters: output formatters: json, xml, etc...</li><li>src/services: services, classifed by type</li><li>bin: contains the binary, after built</li><li>lib: contains librairies when building services as shared librairies</li><li>docs: some documents about the API</li></ul>
+
+<h2>Running</h2>
+
+<p>At this time, there is no authentication implemented.
+If you need it, it is suggestted to use nginx or Apache as a reverse proxy,
+with an authentication &amp; authorization backend (pam, ldap, radius, etc…)</p>
+
+<p>Neither there is SSL encryption.</p>
+
+<h2>Command line options</h2>
+
+<p>If you start the program without any option, it will listen on 127.0.0.1, on port 1188</p>
+
+<p>To change the address or the port number, use the following syntax:</p>
+
+<pre><code>graal -ip 192.168.42.42 -port 1909</code></pre>
+
+<p>To see the other options, use graal --help</p>
+
+<h2>Call examples</h2>
+
+<p>All data is retuned in a JSON encoded object, in a ‘Data’ field</p>
+
+<h3>Testing the API</h3>
+
+<p>Say Hello!</p>
+
+<pre><code>GET /hello
+
+{&quot;Data&quot;:&quot;Hello, how are you?&quot;}</code></pre>
+
+<h3>Get system time</h3>
+
+<pre><code>GET /system/time
+
+{&quot;Data&quot;:&quot;2015-09-20T08:23:58.880287421+01:00&quot;}</code></pre>
+
+<h3>Get system statistics</h3>
+
+<pre><code>GET /system/stats
+
+{
+  &quot;Data&quot;: {
+    &quot;Load&quot;: [
+      &quot;0.08&quot;,
+      &quot;0.15&quot;,
+      &quot;0.21&quot;,
+      &quot;2/882&quot;,
+      &quot;18247&quot;
+    ],
+    &quot;Uptime&quot;: [
+      &quot;1768902.39&quot;,
+      &quot;2666255.90&quot;
+    ],
+    &quot;MemInfo&quot;: [
+      {
+        &quot;Name&quot;: &quot;MemTotal&quot;,
+        &quot;Value&quot;: &quot;16392264 kB&quot;
+      },{
+        &quot;Name&quot;: &quot;MemFree&quot;,
+        &quot;Value&quot;: &quot;810352 kB&quot;
+      },
+    ...
+    ]
+  }
+}</code></pre>
