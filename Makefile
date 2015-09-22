@@ -7,6 +7,9 @@ GO ?= /usr/bin/go
 MARKDOWN ?= /usr/bin/markdown
 LIB_OPTIONS ?= -linkshared
 BUILD_OPTIONS ?= -race
+PORT ?= 1188
+IP ?= 127.0.0.1
+URL ?= http://$(IP):$(PORT)/
 
 all: clean build
 
@@ -18,6 +21,15 @@ shared-install:
 	@echo -n 'Installing standard librairies (as shared): '
 	@sudo $(GO) install -buildmode=shared std && echo 'OK' || echo 'Fail'
 
+dirs:
+	@echo "Creating temporary/working directories"
+	test -d tmp || mkdir tmp
+	test -d instances || mkdir instances
+	test -d tests || mkdir tests
+	test -d tests/images || mkdir tests/images
+	test -d tests/temp || mkdir tests/temp
+	test -d logs || mkdir logs
+
 build:
 	$(GO) build $(BUILD_OPTIONS) -o bin/graal src/main.go
 
@@ -26,9 +38,17 @@ build:
 docs:
 	$(MARKDOWN) README.md >docs/home.html
 
-run:
+run: dirs
 	./bin/graal --home=./docs/home.html
 
+# run in background, logs in logs/server.log
+start: dirs
+	./bin/graal --home=./docs/home.html >logs/server.log 2>&1 &
+
+stop:
+	pidof graal || kill `pidof graal`
+
+restart: stop start
 
 ##############################################################################
 # INSTALL NEEDED PACKAGES FOR DOCKER
@@ -38,16 +58,8 @@ packages:
 	sudo apt-get -qq install debootstrap docker.io
 
 ##############################################################################
-# CREATE THE FULL DOCKER IMAGES FOR TESTING
+# CREATE THE FULL DOCKER IMAGES FOR TESTING / RUNNING
 ##############################################################################
-
-dirs:
-	@echo "Creating temporary/working directories"
-	test -d tmp || mkdir tmp
-	test -d instances || mkdir instances
-	test -d tests || mkdir tests
-	test -d tests/images || mkdir tests/images
-	test -d tests/temp || mkdir tests/temp
 
 # Dynamically generate a new SSH key used for deployment
 ssh-key:
@@ -65,6 +77,14 @@ image-jessie: packages dirs ssh-keys
 	sudo chown $(USER):$(USER) tmp/jessie.tar
 	mv tmp/jessie.tar tests/images/
 	sudo rm -rf jessie
+
+##############################################################################
+# TESTNG
+##############################################################################
+tests: clean dirs build restart
+	cd tests && URL=$(URL) go test
+	make stop
+
 
 ##############################################################################
 # DOCKER TARGETS

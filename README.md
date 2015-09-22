@@ -45,7 +45,7 @@ To change the address or the port number, use the following syntax:
 To see the other options, use graal --help
 
 ## Call examples
-All data is retuned in a JSON encoded object, in a ‘Data’ field
+All data is retuned in a JSON encoded object, in a "Data" field
 
 ### Testing the API
 

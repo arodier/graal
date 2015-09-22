@@ -34,6 +34,7 @@ deploy/id_rsa*
 bin/
 lib/
 tmp/
+logs/
 
 # Docker instances / working folder
 instances/
