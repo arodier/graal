@@ -27,6 +27,9 @@ _testmain.go
 *~
 .#*
 
+# SSH keys are now dynamically generated
+deploy/id_rsa*
+
 # Binary or temporary folders
 bin/
 lib/

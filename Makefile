@@ -49,9 +49,14 @@ dirs:
 	test -d tests/images || mkdir tests/images
 	test -d tests/temp || mkdir tests/temp
 
+# Dynamically generate a new SSH key used for deployment
+ssh-key:
+	rm -f deploy/id_rsa deploy/id_rsa.pub
+	ssh-keygen -N '' -q -C 'graal-auth-key' -t rsa -b 2048 -f deploy/id_rsa
+
 # Create a full Debian Jessie image, using debootstrap
 # This is needed only once, to run the tests on a Debian machine
-image-jessie: packages dirs
+image-jessie: packages dirs ssh-keys
 	@echo "Creating image: Debian Jessie, this may take a while, have a coffee…"
 	sudo debootstrap jessie instances/jessie/
 	sudo mkdir instances/jessie/root/.ssh
