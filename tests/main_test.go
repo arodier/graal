@@ -4,7 +4,6 @@ import (
     "testing"
     "net/http"
     "os"
-    "fmt"
 )
 
 func TestIndex(test *testing.T) {
@@ -14,11 +13,12 @@ func TestIndex(test *testing.T) {
     if url == "" {
         url = "http://127.0.0.1:1188/"
     }
-    fmt.Printf("Opening '%s'\n", url)
 
     resp, error := http.Get(url)
 
     if error != nil {
-        test.Errorf("Cannot access home page: %v", resp)
+        test.Errorf("Cannot access home page: %v", error)
+    } else {
+        resp.Body.Close()
     }
 }

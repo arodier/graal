@@ -5,23 +5,34 @@ package stats
 import (
     "C"
     "strings"
-    "io/ioutil"
+    "strconv"
 )
 
-type MemInfo struct {
-    Name string
-    Value string
+type LoadAvg struct {
+    past1     float64
+    past5     float64
+    past15    float64
 }
 
-type systemStats struct {
-    Load   []string
-    Uptime []string
-    MemInfo []MemInfo
+type Uptime struct {
+    uptime    float64
+    idle      float64
 }
 
-func Index(method string, params map[string]string) interface {} {
+type MemBlockInfo struct {
+    Name      string
+    Value     float64
+}
 
-    stats := systemStats {}
+type SystemStats struct {
+    Load     LoadAvg
+    Uptime   Uptime
+    MemInfo  []MemBlockInfo
+}
+
+func Index(method string, params map[string]string) SystemStats {
+
+    var stats SystemStats
 
     // Load average from /proc
     // The first three fields in this file are load average figures giving
@@ -32,28 +43,43 @@ func Index(method string, params map[string]string) interface {} {
     // The first of these is the number of currently runnable kernel scheduling entities (processes, threads).
     // The second is the number of kernel scheduling entities that currently exist on the system.
     // The fifth field is the PID of the process that was most recently created on the system.
-    load, error := ioutil.ReadFile("/proc/loadavg")
-    if error == nil {
-        stats.Load = strings.Split(strings.Replace(string(load), "\n", "", 1), " ")
+    load := GetLoadAvg()
+    if load != "" {
+        values := strings.Split(load, " ")
+        stats.Load.past1, _ = strconv.ParseFloat(values[0], 1)
+        stats.Load.past5, _ = strconv.ParseFloat(values[1], 1)
+        stats.Load.past15, _ = strconv.ParseFloat(values[2], 1)
     }
 
     // uptime: The first value is uptime, the second is idle time
-    uptime, error := ioutil.ReadFile("/proc/uptime")
-    if error == nil {
-        stats.Uptime = strings.Split(strings.Replace(string(uptime), "\n", "", 1), " 1")
+    uptime := GetUpTime()
+    if uptime != "" {
+        upAndIdle := strings.Split(uptime, " ")
+        stats.Uptime.uptime, _ = strconv.ParseFloat(upAndIdle[0], 1)
+        stats.Uptime.idle, _ = strconv.ParseFloat(upAndIdle[1], 1)
     }
 
     // uptime: The first value is uptime, the second is idle time
-    memInfo, error := ioutil.ReadFile("/proc/meminfo")
-    if error == nil {
+    memInfo := GetMemInfo()
+    if memInfo != "" {
         values := strings.Split(string(memInfo), "\n")
         size := len(values)
-        stats.MemInfo = make([]MemInfo, size, size)
+
+        stats.MemInfo = make([]MemBlockInfo, size, size)
+
         for index,line := range values {
+
+            if len(line) == 0 {
+                continue
+            }
+
             nameValuePair := strings.Split(line, ":")
-            if len(nameValuePair) == 2 && len(nameValuePair[0]) > 0 {
-                stats.MemInfo[index].Name = nameValuePair[0]
-                stats.MemInfo[index].Value = strings.Trim(nameValuePair[1], " ")
+            key := nameValuePair[0]
+            value := strings.TrimSpace(strings.Replace(nameValuePair[1], "kB", "", 1))
+
+            if len(key) > 0 && len(value) > 0 {
+                stats.MemInfo[index].Name = key
+                stats.MemInfo[index].Value, _ = strconv.ParseFloat(value, 1)
             }
         }
     }

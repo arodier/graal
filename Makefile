@@ -14,7 +14,8 @@ URL ?= http://$(IP):$(PORT)/
 all: clean build
 
 clean:
-	rm -rf lib bin
+	@echo "Removing binaries"
+	@rm -rf lib bin
 
 # Install go standard librairies as shared
 shared-install:
@@ -23,15 +24,16 @@ shared-install:
 
 dirs:
 	@echo "Creating temporary/working directories"
-	test -d tmp || mkdir tmp
-	test -d instances || mkdir instances
-	test -d tests || mkdir tests
-	test -d tests/images || mkdir tests/images
-	test -d tests/temp || mkdir tests/temp
-	test -d logs || mkdir logs
+	@test -d tmp || mkdir tmp
+	@test -d instances || mkdir instances
+	@test -d tests || mkdir tests
+	@test -d tests/images || mkdir tests/images
+	@test -d tests/temp || mkdir tests/temp
+	@test -d logs || mkdir logs
 
 build:
-	$(GO) build $(BUILD_OPTIONS) -o bin/graal src/main.go
+	@echo -n "Building the program: "
+	@$(GO) build $(BUILD_OPTIONS) -o bin/graal src/main.go && echo 'OK'
 
 # For now, the 'home page' is generated using the README.md,
 # until we'll use the source code to generate docs
@@ -43,10 +45,16 @@ run: dirs
 
 # run in background, logs in logs/server.log
 start: dirs
-	./bin/graal --home=./docs/home.html >logs/server.log 2>&1 &
+	@echo -n "Starting graal on '$(URL)' : "
+	@test -f tmp/graal.pid && echo 'Already running' || \
+		(./bin/graal --home=./docs/home.html \
+		>logs/server.log 2>&1 & \
+		echo $$! >tmp/graal.pid && echo 'OK' || echo 'Fail' )
 
 stop:
-	pidof graal || kill `pidof graal`
+	@echo -n "Stopping graal on '$(URL)' : "
+	@test -f tmp/graal.pid && (kill `cat tmp/graal.pid` && echo 'OK') || echo 'Not running'
+	@rm -f tmp/graal.pid
 
 restart: stop start
 
@@ -81,10 +89,14 @@ image-jessie: packages dirs ssh-keys
 ##############################################################################
 # TESTNG
 ##############################################################################
-tests: clean dirs build restart
-	cd tests && URL=$(URL) go test
-	make stop
+test-api: clean dirs build restart
+	@echo "Running API tests"
+	@cd tests && URL=$(URL) go test
+	@make stop
 
+utests:
+	@echo "Running unit tests"
+	@cd src/services/system/stats && go test && cd -
 
 ##############################################################################
 # DOCKER TARGETS
