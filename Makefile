@@ -97,6 +97,7 @@ test-api: clean dirs build restart
 utests:
 	@echo "Running unit tests"
 	@cd src/services/system/stats && go test && cd -
+	@cd src/services/system/storage && go test && cd -
 
 ##############################################################################
 # DOCKER TARGETS

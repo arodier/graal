@@ -1,11 +1,9 @@
-package time
+package storage
 
 import (
     "C"
     "strings"
     "regexp"
-    "os/exec"
-    "bytes"
     "log"
 )
 
@@ -23,18 +21,15 @@ type StorageDetails struct {
     DiskUsage     []DiskUsage
 }
 
-func Index(method string, params map[string]string) interface {} {
+func Index(method string, params map[string]string) StorageDetails {
 
     storageDetails := StorageDetails {}
 
-    var output bytes.Buffer
-    command := exec.Command("/bin/df", "-l", "-T")
-    command.Stdout = &output
-    error := command.Run()
+    storageInfo := GetStorageInfo()
 
-    if error == nil {
-        lines := strings.Split(string(output.Bytes()), "\n")
-        size := len(lines)
+    if storageInfo != "" {
+        lines := strings.Split(storageInfo, "\n")
+        size := len(lines) - 1
         storageDetails.DiskUsage = make([]DiskUsage, size, size)
 
         for index,line := range lines {
@@ -57,7 +52,7 @@ func Index(method string, params map[string]string) interface {} {
             }
         }
     } else {
-        log.Fatal(error)
+        log.Fatal("Cannot get storage info")
     }
 
     return storageDetails
