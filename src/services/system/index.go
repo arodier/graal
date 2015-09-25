@@ -31,5 +31,4 @@ func Load(indent bool) {
         result := StorageService.Index("", nil)
         fmtJson.Struct(writer, request, result, indent)
     })
-
 }

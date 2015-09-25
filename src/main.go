@@ -11,11 +11,9 @@ import (
 )
 
 // Manual import services and formatters, until plugins implemented
-// Graal Specific services
-import HelloService "./services/graal/hello/"
-
-// System services entry point
-import SystemService "./services/system/"
+import HelloService "./services/graal/hello/"    // Graal specific services
+import SystemService "./services/system/"        // System services entry point
+import NetworkService "./services/net/"          // Network services entry point
 
 // Output formatters to use (json/xml/etc.)
 import fmtJson "./formatters/"
@@ -70,6 +68,9 @@ func main() {
 
     // Load system services (monitor mem/load/etc.)
     SystemService.Load(indent)
+
+    // Load network services (monitor nic/hostname/firewall/etc.)
+    NetworkService.Load(indent)
 
     // Properly handle Ctrl-C
     channel := make(chan os.Signal, 1)
