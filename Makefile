@@ -43,6 +43,9 @@ docs:
 run: dirs
 	./bin/graal --home=./docs/home.html
 
+demo: dirs
+	./bin/graal --home=./web/default/
+
 # run in background, logs in logs/server.log
 start: dirs
 	@echo -n "Starting graal on '$(URL)' : "
